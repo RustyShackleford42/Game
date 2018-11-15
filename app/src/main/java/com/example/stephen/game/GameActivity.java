@@ -2,6 +2,8 @@ package com.example.stephen.game;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Window;
+import android.view.WindowManager;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -15,8 +17,6 @@ public class GameActivity extends AppCompatActivity {
 
         setContentView(gameView);
     }
-
-
 
     //if activity is paused pause the thread
     @Override
