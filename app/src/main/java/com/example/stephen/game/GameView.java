@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.DisplayMetrics;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -43,6 +44,9 @@ public class GameView extends SurfaceView implements Runnable {
         mainChar = new PlayerCharacter();
         infoTextBox = new InfoTextBox();
         infoTextBox.addToTexts(mainChar.getPlayerName());
+        infoTextBox.addToTexts("don't johnny test me");
+        infoTextBox.addToTexts("slob on da knob");
+        infoTextBox.addToTexts("eat ass smoke grass sled fast");
         rat = new EnemyCharacter();
         rat.setPlayerName("Rat");
         rat.setX(100);
@@ -97,7 +101,10 @@ public class GameView extends SurfaceView implements Runnable {
             //draw stats box
             canvas.drawRect((displayWidth / 2) + 50, (displayHeight / 4) + 10, displayWidth - 50, displayHeight / 2, paint);
 
-            //draw contents of text box
+            //draw test button
+            canvas.drawRect((displayWidth / 4), displayHeight * 0.75f, displayWidth * 0.75f, displayHeight * 0.90f, paint);
+
+            /*#####draw contents of text box#####*/
 
             //set paint for drawing text
             paint.setStyle(Paint.Style.FILL);
@@ -105,14 +112,28 @@ public class GameView extends SurfaceView implements Runnable {
             String[] textBoxItems = infoTextBox.getItems();
             for(int i=0;i<infoTextBox.getNumItems();i++){
                 if(i != 0){
-                    //draw line
+                    //TODO: have a line drawn between text items
                 }
-                canvas.drawText(textBoxItems[i], 60, 100, paint);
+                canvas.drawText(textBoxItems[i], 60, 100 + i*40, paint);
             }
 
             holder.unlockCanvasAndPost(canvas);
         }
 
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent motionEvent){
+        switch (motionEvent.getAction() & MotionEvent.ACTION_MASK){
+            case MotionEvent.ACTION_UP:
+
+                break;
+
+            case MotionEvent.ACTION_DOWN:
+
+                break;
+        }
+        return true;
     }
 
     private void control(){
