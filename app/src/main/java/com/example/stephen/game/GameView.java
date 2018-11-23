@@ -4,10 +4,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static android.graphics.Color.WHITE;
 
@@ -26,6 +30,7 @@ public class GameView extends SurfaceView implements Runnable {
     PlayerCharacter mainChar;
     EnemyCharacter rat;
     InfoTextBox infoTextBox;
+    ScreenManager screenManager;
 
     public GameView(Context context) {
         super(context);
@@ -47,6 +52,8 @@ public class GameView extends SurfaceView implements Runnable {
         infoTextBox.addToTexts("don't johnny test me");
         infoTextBox.addToTexts("slob on da knob");
         infoTextBox.addToTexts("eat ass smoke grass sled fast");
+        screenManager = new ScreenManager(displayHeight, displayWidth);
+        screenManager.setCurrentLevel("battle");
         rat = new EnemyCharacter();
         rat.setPlayerName("Rat");
         rat.setX(100);
@@ -101,8 +108,35 @@ public class GameView extends SurfaceView implements Runnable {
             //draw stats box
             canvas.drawRect((displayWidth / 2) + 50, (displayHeight / 4) + 10, displayWidth - 50, displayHeight / 2, paint);
 
-            //draw test button
-            canvas.drawRect((displayWidth / 4), displayHeight * 0.75f, displayWidth * 0.75f, displayHeight * 0.90f, paint);
+            //draw screen buttons
+            //canvas.drawRect((displayWidth / 4), displayHeight * 0.75f, displayWidth * 0.75f, displayHeight * 0.90f, paint);
+
+
+            List<GameButton> screenButtons = screenManager.getScreenButtons();
+            //infoTextBox.addToTexts(Integer.toString(screenButtons.size()));
+            for(int i=0;i<screenButtons.size();i++){
+                GameButton screenButton = screenButtons.get(i);
+                float[] boxPos = screenButton.getBoxPos();
+
+                //set paint for drawing box
+                paint.setColor(WHITE);
+                paint.setStyle(Paint.Style.STROKE);
+                paint.setStrokeWidth(10);
+
+
+                //draw box itself
+                canvas.drawRect(boxPos[0], boxPos[1], boxPos[2], boxPos[3], paint);
+
+                //draw text in box
+                paint.setStyle(Paint.Style.FILL);
+                paint.setTextSize(30);
+
+
+                canvas.drawText(screenButton.getButtonText(), (screenButton.getButtonRect().left + (screenButton.getButtonRect().width() - paint.measureText(screenButton.getButtonText())) / 2), screenButton.getButtonRect().centerY(), paint);
+
+                //infoTextBox.addToTexts("BoxPos: " + "(" + Float.toString(boxPos[0]) + ", " + Float.toString(boxPos[1]) + ", " + Float.toString(boxPos[2]) + ", " + Float.toString(boxPos[3]) + ")");
+            }
+
 
             /*#####draw contents of text box#####*/
 
@@ -126,6 +160,28 @@ public class GameView extends SurfaceView implements Runnable {
     public boolean onTouchEvent(MotionEvent motionEvent){
         switch (motionEvent.getAction() & MotionEvent.ACTION_MASK){
             case MotionEvent.ACTION_UP:
+
+                //add item to infoTextBox
+                float touchX = motionEvent.getX();
+                float touchY = motionEvent.getY();
+
+                //check where the touch was//
+
+                //get buttons
+                List<GameButton> screenButtons = screenManager.getScreenButtons();
+
+                //create Rect objects for every button
+                for(int i=0;i<screenButtons.size();i++){
+                    float[] boxPos = screenButtons.get(i).getBoxPos();
+                    Rect r = new Rect((int)boxPos[0], (int)boxPos[1], (int)boxPos[2], (int)boxPos[3]);
+
+                    //check if touch was in box
+                    if(r.contains((int)touchX, (int)touchY)){
+                        infoTextBox.addToTexts("added on touch");
+                    }
+                }
+
+
 
                 break;
 
