@@ -6,11 +6,11 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static android.graphics.Color.WHITE;
@@ -27,6 +27,8 @@ public class GameView extends SurfaceView implements Runnable {
     int displayHeight, displayWidth;
 
     //Game objects
+    GameState gameState;
+
     PlayerCharacter mainChar;
     EnemyCharacter rat;
     InfoTextBox infoTextBox;
@@ -46,14 +48,13 @@ public class GameView extends SurfaceView implements Runnable {
         paint = new Paint();
 
         //initialize game objects
-        mainChar = new PlayerCharacter();
+        gameState = new GameState(displayHeight, displayWidth);
+
+
         infoTextBox = new InfoTextBox();
         infoTextBox.addToTexts(mainChar.getPlayerName());
-        infoTextBox.addToTexts("don't johnny test me");
-        infoTextBox.addToTexts("slob on da knob");
-        infoTextBox.addToTexts("eat ass smoke grass sled fast");
         screenManager = new ScreenManager(displayHeight, displayWidth);
-        screenManager.setCurrentLevel("battle");
+        screenManager.setCurrentScreen("battle");
         rat = new EnemyCharacter();
         rat.setPlayerName("Rat");
         rat.setX(100);
@@ -96,6 +97,11 @@ public class GameView extends SurfaceView implements Runnable {
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(10);
 
+            //draw buttons
+            for(int i=0;i<screenManager.getScreenButtons().size();i++){
+                canvas.drawRect(screenManager.getScreenButtons().get(i).getButtonRect(), paint);
+            }
+
             //draw map
             //canvas.drawRect(50, 50, displayWidth - 50, displayHeight / 2, paint);
 
@@ -108,41 +114,16 @@ public class GameView extends SurfaceView implements Runnable {
             //draw stats box
             canvas.drawRect((displayWidth / 2) + 50, (displayHeight / 4) + 10, displayWidth - 50, displayHeight / 2, paint);
 
-            //draw screen buttons
+            //draw test button
             //canvas.drawRect((displayWidth / 4), displayHeight * 0.75f, displayWidth * 0.75f, displayHeight * 0.90f, paint);
-
-
-            List<GameButton> screenButtons = screenManager.getScreenButtons();
-            //infoTextBox.addToTexts(Integer.toString(screenButtons.size()));
-            for(int i=0;i<screenButtons.size();i++){
-                GameButton screenButton = screenButtons.get(i);
-                float[] boxPos = screenButton.getBoxPos();
-
-                //set paint for drawing box
-                paint.setColor(WHITE);
-                paint.setStyle(Paint.Style.STROKE);
-                paint.setStrokeWidth(10);
-
-
-                //draw box itself
-                canvas.drawRect(boxPos[0], boxPos[1], boxPos[2], boxPos[3], paint);
-
-                //draw text in box
-                paint.setStyle(Paint.Style.FILL);
-                paint.setTextSize(30);
-
-
-                canvas.drawText(screenButton.getButtonText(), (screenButton.getButtonRect().left + (screenButton.getButtonRect().width() - paint.measureText(screenButton.getButtonText())) / 2), screenButton.getButtonRect().centerY(), paint);
-
-                //infoTextBox.addToTexts("BoxPos: " + "(" + Float.toString(boxPos[0]) + ", " + Float.toString(boxPos[1]) + ", " + Float.toString(boxPos[2]) + ", " + Float.toString(boxPos[3]) + ")");
-            }
-
 
             /*#####draw contents of text box#####*/
 
-            //set paint for drawing text
+            //set paint for drawing text//
             paint.setStyle(Paint.Style.FILL);
             paint.setTextSize(30);
+
+            //draw text box text
             String[] textBoxItems = infoTextBox.getItems();
             for(int i=0;i<infoTextBox.getNumItems();i++){
                 if(i != 0){
@@ -150,6 +131,9 @@ public class GameView extends SurfaceView implements Runnable {
                 }
                 canvas.drawText(textBoxItems[i], 60, 100 + i*40, paint);
             }
+
+            //draw text in buttons
+
 
             holder.unlockCanvasAndPost(canvas);
         }
@@ -165,23 +149,45 @@ public class GameView extends SurfaceView implements Runnable {
                 float touchX = motionEvent.getX();
                 float touchY = motionEvent.getY();
 
-                //check where the touch was//
+                //check where touch was
 
                 //get buttons
                 List<GameButton> screenButtons = screenManager.getScreenButtons();
 
                 //create Rect objects for every button
-                for(int i=0;i<screenButtons.size();i++){
-                    float[] boxPos = screenButtons.get(i).getBoxPos();
-                    Rect r = new Rect((int)boxPos[0], (int)boxPos[1], (int)boxPos[2], (int)boxPos[3]);
+                for(int i=0;i<screenButtons.size();i++) {
+                    Rect r = screenButtons.get(i).getButtonRect();
 
                     //check if touch was in box
                     if(r.contains((int)touchX, (int)touchY)){
-                        infoTextBox.addToTexts("added on touch");
+                        Log.d("debug", "touch was contained in a box");
+                        switch (screenButtons.get(i).getButtonName()) {
+                            case "Attack":
+                                //print inventory
+
+                                List<InventoryItem> inv = mainChar.getInventory();
+
+                                for(int j=0;j<inv.size();j++){
+                                    infoTextBox.addToTexts(inv.get(j).getItemName() + "    " + Integer.toString(inv.get(j).getQuantity()));
+                                }
+
+                                //infoTextBox.addToTexts("added on touch");
+                                break;
+
+                            case "addToInv":
+                                //add new item to inventory
+
+                                mainChar.addItemToInventory(new Item("potion"));
+                                break;
+
+                            case "removeFromInv":
+                                //remove item from inventory
+                                Log.d("debug", "remove button pressed");
+                                mainChar.removeItemFromInventory(new Item("potion"));
+                                break;
+                        }
                     }
                 }
-
-
 
                 break;
 
