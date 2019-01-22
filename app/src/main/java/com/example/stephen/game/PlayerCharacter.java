@@ -9,11 +9,11 @@ import java.util.List;
 public class PlayerCharacter {
 
     private String playerName;
-    private int health, mana, x, y, numMovesPerTurn;
+    private int health, mana, tempHealth, tempMana, x, y, numMovesPerTurn;
     private List<InventoryItem> inventory;
 
     public PlayerCharacter(){
-        x = y = health = mana = 50;
+        x = y = health = mana = tempHealth = tempMana = 50;
         numMovesPerTurn = 3;
         playerName = "Rusty";
         inventory = new ArrayList<>();
@@ -21,6 +21,14 @@ public class PlayerCharacter {
 
     public int getHealth() {
         return health;
+    }
+
+    public int getTempHealth() {
+        return tempHealth;
+    }
+
+    public void setTempHealth(int tempHealth) {
+        this.tempHealth = tempHealth;
     }
 
     public void setHealth(int health) {
@@ -33,6 +41,14 @@ public class PlayerCharacter {
 
     public void setMana(int mana) {
         this.mana = mana;
+    }
+
+    public int getTempMana() {
+        return tempMana;
+    }
+
+    public void setTempMana(int tempMana) {
+        this.tempMana = tempMana;
     }
 
     public int getX() {
@@ -106,4 +122,9 @@ public class PlayerCharacter {
             }
         }
     }
+    public int[] getStats(){
+        int[] stats = {health, tempHealth, mana, tempMana};
+        return stats;
+    }
+
 }

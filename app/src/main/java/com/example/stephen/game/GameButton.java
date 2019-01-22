@@ -1,5 +1,6 @@
 package com.example.stephen.game;
 
+import android.graphics.Paint;
 import android.graphics.Rect;
 
 public class GameButton {
@@ -50,5 +51,11 @@ public class GameButton {
 
     public Rect getButtonRect(){
         return buttonRect;
+    }
+
+    public int[] getButtonTextPos(Paint paint){
+        int[] pos = {((getButtonRect().width()) / 2), (getButtonRect().height() / 2)};
+        return pos;
+
     }
 }

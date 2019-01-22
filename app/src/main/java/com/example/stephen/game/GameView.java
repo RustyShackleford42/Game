@@ -27,10 +27,8 @@ public class GameView extends SurfaceView implements Runnable {
     int displayHeight, displayWidth;
 
     //Game objects
-    GameState gameState;
+    GameManager gameManager;
 
-    PlayerCharacter mainChar;
-    EnemyCharacter rat;
     InfoTextBox infoTextBox;
     ScreenManager screenManager;
 
@@ -48,22 +46,12 @@ public class GameView extends SurfaceView implements Runnable {
         paint = new Paint();
 
         //initialize game objects
-        gameState = new GameState(displayHeight, displayWidth);
-
-
-        infoTextBox = new InfoTextBox();
-        infoTextBox.addToTexts(mainChar.getPlayerName());
+        gameManager = new GameManager();
         screenManager = new ScreenManager(displayHeight, displayWidth);
-        screenManager.setCurrentScreen("battle");
-        rat = new EnemyCharacter();
-        rat.setPlayerName("Rat");
-        rat.setX(100);
-        rat.setY(100);
+        setGameState("battle");
+        infoTextBox = new InfoTextBox();
+        infoTextBox.addToTexts(gameManager.mainChar.getPlayerName());
 
-        Attack attack = new Attack();
-        Move[] ratMoves = {attack};
-
-        rat.setMoves(ratMoves);
 
     }
 
@@ -84,6 +72,8 @@ public class GameView extends SurfaceView implements Runnable {
         if(holder.getSurface().isValid()) {
             canvas = holder.lockCanvas();
 
+            //**** BOXES *****//
+
             //set paint for border
             paint.setColor(WHITE);
             paint.setStyle(Paint.Style.STROKE);
@@ -102,22 +92,7 @@ public class GameView extends SurfaceView implements Runnable {
                 canvas.drawRect(screenManager.getScreenButtons().get(i).getButtonRect(), paint);
             }
 
-            //draw map
-            //canvas.drawRect(50, 50, displayWidth - 50, displayHeight / 2, paint);
-
-            //draw text box
-            canvas.drawRect(50, 50, displayWidth / 2, displayHeight / 2, paint);
-
-            //draw enemy photo box
-            canvas.drawRect((displayWidth / 2) + 50, 50, displayWidth - 50, (displayHeight / 4) - 10, paint);
-
-            //draw stats box
-            canvas.drawRect((displayWidth / 2) + 50, (displayHeight / 4) + 10, displayWidth - 50, displayHeight / 2, paint);
-
-            //draw test button
-            //canvas.drawRect((displayWidth / 4), displayHeight * 0.75f, displayWidth * 0.75f, displayHeight * 0.90f, paint);
-
-            /*#####draw contents of text box#####*/
+            //***** TEXT ******//
 
             //set paint for drawing text//
             paint.setStyle(Paint.Style.FILL);
@@ -133,6 +108,11 @@ public class GameView extends SurfaceView implements Runnable {
             }
 
             //draw text in buttons
+            for(int i=0;i<screenManager.getScreenButtons().size();i++){
+                GameButton button = screenManager.getScreenButtons().get(i);
+
+                canvas.drawText(button.getButtonText(), button.getButtonTextPos(paint)[0], button.getButtonTextPos(paint)[1], paint);
+            }
 
 
             holder.unlockCanvasAndPost(canvas);
@@ -165,7 +145,7 @@ public class GameView extends SurfaceView implements Runnable {
                             case "Attack":
                                 //print inventory
 
-                                List<InventoryItem> inv = mainChar.getInventory();
+                                List<InventoryItem> inv = gameManager.mainChar.getInventory();
 
                                 for(int j=0;j<inv.size();j++){
                                     infoTextBox.addToTexts(inv.get(j).getItemName() + "    " + Integer.toString(inv.get(j).getQuantity()));
@@ -177,13 +157,13 @@ public class GameView extends SurfaceView implements Runnable {
                             case "addToInv":
                                 //add new item to inventory
 
-                                mainChar.addItemToInventory(new Item("potion"));
+                                gameManager.mainChar.addItemToInventory(new Item("potion"));
                                 break;
 
                             case "removeFromInv":
                                 //remove item from inventory
                                 Log.d("debug", "remove button pressed");
-                                mainChar.removeItemFromInventory(new Item("potion"));
+                                gameManager.mainChar.removeItemFromInventory(new Item("potion"));
                                 break;
                         }
                     }
@@ -224,4 +204,12 @@ public class GameView extends SurfaceView implements Runnable {
         gameThread = new Thread(this);
         gameThread.start();
     }
+
+    //set screen and gamestate at the same time
+    private void setGameState(String state){
+        gameManager.setGameState(state);
+        screenManager.setCurrentScreen(state);
+    }
+
+
 }
