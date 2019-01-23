@@ -159,12 +159,7 @@ public class GameView extends SurfaceView implements Runnable {
 
                                 gameManager.mainChar.addItemToInventory(new Item("potion"));
                                 break;
-
-                            case "removeFromInv":
-                                //remove item from inventory
-                                Log.d("debug", "remove button pressed");
-                                gameManager.mainChar.removeItemFromInventory(new Item("potion"));
-                                break;
+                                
                         }
                     }
                 }

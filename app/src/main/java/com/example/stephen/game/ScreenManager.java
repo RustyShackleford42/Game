@@ -42,11 +42,6 @@ public class ScreenManager {
                 float[] boxPos3 = {(displayWidth / 8), displayHeight * 0.60f, displayWidth * 0.4f, displayHeight * 0.70f};
                 testButton = new GameButton(boxPos3, "addToInv", "addToInv");
                 screenButtons.add(testButton);
-                
-                //remove from inv test button
-                float[] boxPos4 = {displayWidth * 0.5f, displayHeight * 0.60f, displayWidth * 0.8f, displayHeight * 0.70f};
-                testButton = new GameButton(boxPos4, "removeFromInv", "removeFromInv");
-                screenButtons.add(testButton);
 
                 //enemy photo box
                 float[] boxPos5 = {(displayWidth / 2) + 50, 50, displayWidth - 50, (displayHeight / 4) - 10};

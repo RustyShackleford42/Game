@@ -54,7 +54,10 @@ public class GameButton {
     }
 
     public int[] getButtonTextPos(Paint paint){
-        int[] pos = {((getButtonRect().width()) / 2), (getButtonRect().height() / 2)};
+        Rect r = new Rect();
+        paint.getTextBounds(getButtonText(), 0, getButtonText().length(), r);
+
+        int[] pos = {getButtonRect().left + (getButtonRect().centerX()-r.width())/2, getButtonRect().centerY()};
         return pos;
 
     }
